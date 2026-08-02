@@ -3,42 +3,171 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Do-GOOD-for-YOU — placeholder</title>
-  <meta name="description" content="Placeholder page for Do-GOOD-for-YOU. Replace public/index.html with your app build or static site files." />
+  <title>Do Good — Today</title>
+  <meta name="description" content="Do small acts each day to improve well-being." />
   <style>
-    body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; margin: 2rem; color: #111; }
-    header { margin-bottom: 1.5rem }
-    .card { padding: 1rem; border: 1px solid #eee; border-radius: 8px; max-width: 780px }
-    a { color: #0366d6 }
+    :root{
+      --bg:#24120b; /* dark brown */
+      --card:#2e1a14;
+      --muted:#bda192;
+      --accent:#2f8f68; /* green */
+      --glass: rgba(255,255,255,0.03);
+      --radius:14px;
+      --maxw:900px;
+      color-scheme: dark;
+    }
+    html,body{height:100%;margin:0;background:var(--bg);font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;color:#fff}
+    .container{max-width:var(--maxw);margin:28px auto;padding:0 20px}
+    header{display:flex;align-items:center;gap:18px;margin-bottom:28px}
+    .logo{width:40px;height:40px;border-radius:50%;background:#d45a3a;display:flex;align-items:center;justify-content:center;font-weight:700}
+    nav{margin-left:auto;display:flex;gap:14px;align-items:center}
+    nav a{color:var(--muted);text-decoration:none}
+
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.05));border-radius:var(--radius);padding:24px;box-shadow:0 6px 18px rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.02)}
+    .today{margin-bottom:20px}
+    .meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;color:var(--muted);font-size:13px}
+    .act-title{font-size:22px;margin:6px 0 10px}
+    .act-desc{color:var(--muted);margin-bottom:18px}
+    .cta{background:var(--accent);border:none;padding:12px 20px;border-radius:10px;color:white;font-weight:600;cursor:pointer}
+    .cta:focus{outline:3px solid rgba(47,143,104,0.25)}
+    .recent{margin-top:36px}
+    .recent-list{display:flex;flex-direction:column;gap:12px;margin-top:12px}
+    .recent-item{background:rgba(0,0,0,0.15);padding:12px;border-radius:10px;display:flex;justify-content:space-between;align-items:center}
+    .small{color:var(--muted);font-size:13px}
+    .streak{background:#3d2319;padding:8px 12px;border-radius:10px;color:var(--muted);font-weight:600}
+    footer{margin-top:28px;color:var(--muted);font-size:13px}
+
+    /* responsive */
+    @media (max-width:600px){.container{padding:18px}}
   </style>
 </head>
 <body>
-  <header>
-    <h1>Do-GOOD-for-YOU</h1>
-    <p>Placeholder site installed by an automated fix. Replace these files with your app's static build (index.html, CSS, JS, assets) in the <code>public/</code> folder.</p>
-  </header>
+  <div class="container">
+    <header>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="logo">D</div>
+        <div>
+          <div style="font-weight:700">Do Good</div>
+          <div style="font-size:12px;color:var(--muted)">Small acts, big impact</div>
+        </div>
+      </div>
+      <nav>
+        <a href="#">Today</a>
+        <a href="#">Explore</a>
+        <a href="#">History</a>
+        <div class="streak" id="streak">0</div>
+      </nav>
+    </header>
 
-  <main class="card">
-    <h2>Quick checklist to get your app running</h2>
-    <ol>
-      <li>Place your app files (index.html, assets) into the <code>public/</code> directory.</li>
-      <li>If your app requires a build step (React/Vue), run <code>npm run build</code> and copy the build output into <code>public/</code>.</li>
-      <li>Ensure any API/server code listens on <code>process.env.PORT</code> (the included server already does this).</li>
-      <li>Start the Replit run button — the server will install dependencies and start.</li>
-    </ol>
+    <main>
+      <section class="today card" id="todayCard" aria-live="polite">
+        <div class="meta">
+          <div class="small" id="category">Mental Health</div>
+          <div class="small" id="estimate">2 min</div>
+        </div>
+        <h2 class="act-title" id="title">Loading...</h2>
+        <p class="act-desc" id="desc">Please wait while we load today's act.</p>
+        <button class="cta" id="doneBtn">I Did This!</button>
+      </section>
 
-    <p>Replit demo URL: <a href="https://kindness-catalyst--jujubajujuba.replit.app/" target="_blank" rel="noopener">https://kindness-catalyst--jujubajujuba.replit.app/</a></p>
+      <section class="recent">
+        <h3 style="margin:0 0 8px 0">Recent Acts</h3>
+        <div class="recent-list" id="recentList">
+          <!-- recent items inserted here -->
+        </div>
+      </section>
+    </main>
 
-    <h3>Next steps I can do for you</h3>
-    <ul>
-      <li>Analyze runtime logs from Replit (paste them here) to troubleshoot errors.</li>
-      <li>Run a Lighthouse/HAR audit — upload the HAR or Lighthouse report and I'll analyze it.</li>
-      <li>If your project is not Node-based, upload a zip of the source or grant repo access and I'll adapt this server or provide platform-specific instructions.</li>
-    </ul>
-  </main>
+    <footer>
+      <small>Tip: Replace this placeholder with your full UI. This demo wires a simple backend and UI interaction so the "I Did This!" button records acts to storage.</small>
+    </footer>
+  </div>
 
-  <footer style="margin-top:1.5rem;color:#666;font-size:0.9rem">
-    Automated commit: added minimal static server and placeholder public/index.html to help the app run on Replit and other hosts. Replace with your real app files when ready.
-  </footer>
+  <script>
+    async function fetchCurrent() {
+      try{
+        const res = await fetch('/api/acts/current');
+        if(!res.ok) throw new Error('No current');
+        return await res.json();
+      }catch(e){
+        return null;
+      }
+    }
+    async function fetchHistory(){
+      try{
+        const res = await fetch('/api/acts/history');
+        if(!res.ok) return [];
+        return await res.json();
+      }catch(e){return []}
+    }
+    function timeAgo(iso){
+      const d = new Date(iso);
+      const diff = Math.floor((Date.now()-d.getTime())/1000);
+      if(diff<60) return 'just now';
+      if(diff<3600) return Math.floor(diff/60)+'m';
+      if(diff<86400) return Math.floor(diff/3600)+'h';
+      return d.toLocaleDateString();
+    }
+    function renderRecent(list){
+      const root = document.getElementById('recentList');
+      root.innerHTML='';
+      list.forEach(item=>{
+        const el = document.createElement('div');
+        el.className='recent-item';
+        el.innerHTML = `<div>
+            <div style="font-weight:600">${item.title}</div>
+            <div class="small">${item.category}</div>
+          </div>
+          <div class="small">${timeAgo(item.timestamp)}</div>`;
+        root.appendChild(el);
+      });
+    }
+    async function markDone(){
+      const btn = document.getElementById('doneBtn');
+      btn.disabled = true;
+      btn.textContent = 'Recording...';
+      try{
+        const res = await fetch('/api/acts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({note:null})});
+        if(!res.ok) throw new Error('Failed');
+        const record = await res.json();
+        // update UI
+        const history = await fetchHistory();
+        renderRecent(history);
+        updateStreak(history);
+        btn.textContent = '✓ I Did This!';
+        setTimeout(()=>{btn.textContent='I Did This!';btn.disabled=false},1200);
+      }catch(err){
+        console.error(err);
+        btn.textContent = 'Try again';
+        setTimeout(()=>{btn.textContent='I Did This!';btn.disabled=false},1200);
+      }
+    }
+    function updateStreak(history){
+      // very simple streak: count acts done in last N days (consecutive not implemented)
+      const today = new Date();
+      const last24 = history.filter(h=> (new Date(h.timestamp)) > (Date.now()-1000*60*60*24));
+      document.getElementById('streak').textContent = last24.length;
+    }
+    async function init(){
+      const current = await fetchCurrent();
+      const history = await fetchHistory();
+      if(current){
+        document.getElementById('title').textContent = current.title;
+        document.getElementById('desc').textContent = current.description;
+        document.getElementById('category').textContent = current.category;
+        document.getElementById('estimate').textContent = (current.estimateMinutes||0)+' min';
+      } else {
+        document.getElementById('title').textContent = 'No act available';
+        document.getElementById('desc').textContent = '';
+        document.getElementById('category').textContent='';
+        document.getElementById('estimate').textContent='';
+        document.getElementById('doneBtn').disabled = true;
+      }
+      renderRecent(history);
+      updateStreak(history);
+      document.getElementById('doneBtn').addEventListener('click', markDone);
+    }
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
 </body>
 </html>

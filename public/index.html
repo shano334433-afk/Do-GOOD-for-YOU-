@@ -23,7 +23,7 @@
     nav{margin-left:auto;display:flex;gap:14px;align-items:center}
     nav a{color:var(--muted);text-decoration:none}
 
-    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.05));border-radius:var(--radius);padding:24px;box-shadow:0 6px 18px rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.02)}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.05));border-radius:var(--radius);padding:24px;box-shadow:0 6px 18px rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.04)}
     .today{margin-bottom:20px}
     .meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;color:var(--muted);font-size:13px}
     .act-title{font-size:22px;margin:6px 0 10px}
@@ -55,7 +55,7 @@
         <a href="#">Today</a>
         <a href="#">Explore</a>
         <a href="#">History</a>
-        <div class="streak" id="streak">0</div>
+        <div class="streak" id="streak" aria-label="Acts completed in last 24 hours">0</div>
       </nav>
     </header>
 
@@ -72,7 +72,7 @@
 
       <section class="recent">
         <h3 style="margin:0 0 8px 0">Recent Acts</h3>
-        <div class="recent-list" id="recentList">
+        <div class="recent-list" id="recentList" aria-live="polite" aria-atomic="false">
           <!-- recent items inserted here -->
         </div>
       </section>
@@ -125,6 +125,7 @@
     async function markDone(){
       const btn = document.getElementById('doneBtn');
       btn.disabled = true;
+      btn.setAttribute('aria-busy', 'true');
       btn.textContent = 'Recording...';
       try{
         const res = await fetch('/api/acts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({note:null})});
@@ -140,6 +141,8 @@
         console.error(err);
         btn.textContent = 'Try again';
         setTimeout(()=>{btn.textContent='I Did This!';btn.disabled=false},1200);
+      } finally {
+        btn.removeAttribute('aria-busy');
       }
     }
     function updateStreak(history){

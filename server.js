@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const compression = require('compression');
 const { v4: uuidv4 } = require('uuid');
+const helmet = require('helmet');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -23,25 +24,31 @@ function readActs() {
 }
 
 function writeActs(data) {
-  fs.writeFileSync(actsPath, JSON.stringify(data, null, 2), 'utf8');
+  // atomic write: write to temp file then rename
+  const tmpPath = actsPath + '.tmp';
+  try {
+    fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2), 'utf8');
+    fs.renameSync(tmpPath, actsPath);
+  } catch (err) {
+    // cleanup temp file if present
+    try { if (fs.existsSync(tmpPath)) fs.unlinkSync(tmpPath); } catch(e){}
+    throw err;
+  }
 }
 
 // Middlewares
 app.use(compression());
 app.use(express.json());
-
-// Basic security headers — tune CSP for your app's needs
-app.use((req, res, next) => {
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('X-Frame-Options', 'DENY');
-  res.setHeader('Referrer-Policy', 'no-referrer-when-downgrade');
-  res.setHeader('Permissions-Policy', 'geolocation=()');
-  res.setHeader(
-    'Content-Security-Policy',
-    "default-src 'self' https:; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:"
-  );
-  next();
-});
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'", "https:"],
+      scriptSrc: ["'self'", "https:", "'unsafe-inline'"], // keep 'unsafe-inline' while migrating inline scripts
+      styleSrc: ["'self'", "https:", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"]
+    }
+  }
+}));
 
 // Serve static files with caching
 app.use(express.static(staticDir, { maxAge: '1d' }));
@@ -61,26 +68,31 @@ app.get('/api/acts/history', (req, res) => {
 
 // API: record a completed act
 app.post('/api/acts', (req, res) => {
-  const data = readActs();
-  const act = data.current;
-  if (!act) return res.status(400).json({ error: 'No current act to record' });
+  try {
+    const data = readActs();
+    const act = data.current;
+    if (!act) return res.status(400).json({ error: 'No current act to record' });
 
-  const record = {
-    id: uuidv4(),
-    actId: act.id,
-    title: act.title,
-    category: act.category,
-    timestamp: new Date().toISOString(),
-    note: req.body.note || null
-  };
+    const record = {
+      id: uuidv4(),
+      actId: act.id,
+      title: act.title,
+      category: act.category,
+      timestamp: new Date().toISOString(),
+      note: req.body.note || null
+    };
 
-  data.history = data.history || [];
-  data.history.unshift(record);
-  // keep history to a reasonable length
-  if (data.history.length > 1000) data.history = data.history.slice(0, 1000);
+    data.history = data.history || [];
+    data.history.unshift(record);
+    // keep history to a reasonable length
+    if (data.history.length > 1000) data.history = data.history.slice(0, 1000);
 
-  writeActs(data);
-  res.status(201).json(record);
+    writeActs(data);
+    res.status(201).json(record);
+  } catch (err) {
+    console.error('Failed to record act', err);
+    res.status(500).json({ error: 'Failed to record act' });
+  }
 });
 
 // Allow client-side routing for SPA

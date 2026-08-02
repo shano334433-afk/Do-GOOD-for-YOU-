@@ -11,9 +11,12 @@ app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('Referrer-Policy', 'no-referrer-when-downgrade');
-  res.setHeader('Permissions-Policy', "geolocation=()",
+  // Permissions-Policy value must be a string and no trailing comma
+  res.setHeader('Permissions-Policy', 'geolocation=()');
+  res.setHeader(
+    'Content-Security-Policy',
+    "default-src 'self' https:; img-src 'self' data: https:; script-src 'self' https: 'unsafe-inline'"
   );
-  res.setHeader('Content-Security-Policy', "default-src 'self' https:; img-src 'self' data: https:; script-src 'self' https: 'unsafe-inline'");
   next();
 });
 

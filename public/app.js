@@ -25,16 +25,32 @@ function timeAgo(iso){
 }
 function renderRecent(list){
   const root = document.getElementById('recentList');
-  root.innerHTML='';
-  list.forEach(item=>{
-    const el = document.createElement('div');
-    el.className='recent-item';
-    el.innerHTML = `<div>
-        <div style="font-weight:600">${item.title}</div>
-        <div class="small">${item.category}</div>
-      </div>
-      <div class="small">${timeAgo(item.timestamp)}</div>`;
-    root.appendChild(el);
+  root.innerHTML = '';
+  list.forEach(item => {
+    const itemEl = document.createElement('div');
+    itemEl.className = 'recent-item';
+
+    const left = document.createElement('div');
+
+    const titleEl = document.createElement('div');
+    titleEl.style.fontWeight = 600;
+    titleEl.textContent = item.title || 'Untitled';
+
+    const categoryEl = document.createElement('div');
+    categoryEl.className = 'small';
+    categoryEl.textContent = item.category || '';
+
+    left.appendChild(titleEl);
+    left.appendChild(categoryEl);
+
+    const timeEl = document.createElement('div');
+    timeEl.className = 'small';
+    timeEl.textContent = timeAgo(item.timestamp);
+
+    itemEl.appendChild(left);
+    itemEl.appendChild(timeEl);
+
+    root.appendChild(itemEl);
   });
 }
 async function markDone(){

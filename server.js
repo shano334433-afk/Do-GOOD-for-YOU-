@@ -43,7 +43,10 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'", "https:"],
-      scriptSrc: ["'self'", "https:", "'unsafe-inline'"], // keep 'unsafe-inline' while migrating inline scripts
+      // script-src: no 'unsafe-inline' because JS is now an external file served from the same origin
+      scriptSrc: ["'self'", "https:"],
+      // keep 'unsafe-inline' for styles for now because index.html contains an inline <style> block and inline style attributes
+      // (migrate styles to external CSS later to remove 'unsafe-inline' from style-src)
       styleSrc: ["'self'", "https:", "'unsafe-inline'"],
       imgSrc: ["'self'", "data:", "https:"]
     }
